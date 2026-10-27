@@ -1,0 +1,19 @@
+{
+  "name": "xml-to-redis",
+  "version": "1.0.0",
+  "description": "Export subdomains and cookies from config.xml into Redis",
+  "main": "src/cli.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/cli.js",
+    "test": "node --test test/*.test.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "fast-xml-parser": "^4.5.0",
+    "redis": "^4.7.0"
+  },
+  "license": "MIT"
+}

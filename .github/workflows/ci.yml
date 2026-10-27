@@ -1,0 +1,32 @@
+name: CI
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npm test
+
+  docker-end-to-end:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run export.sh -v config.xml
+        run: ./export.sh -v config.xml
+      - name: Verify keys in Redis
+        run: |
+          set -e
+          count=$(docker compose exec -T redis redis-cli DBSIZE)
+          echo "Keys in Redis: $count"
+          test "$count" -eq 47
+          test "$(docker compose exec -T redis redis-cli GET cookie:dlp-avast:amazon)" = "mmm_amz_dlp_777_ppc_m"
+          docker compose exec -T redis redis-cli GET subdomains | python3 -c "import json,sys; assert len(json.load(sys.stdin)) == 38"
+      - name: Stop containers
+        if: always()
+        run: docker compose down -v
