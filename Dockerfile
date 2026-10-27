@@ -1,11 +1,13 @@
-FROM node:20-alpine
+FROM python:3.12-slim
 
 WORKDIR /app
 
-# Install dependencies first so this layer is cached between code changes.
-COPY package.json package-lock.json ./
-RUN npm ci --omit=dev
+# Install the Redis client library first, so this layer is cached
+# and not reinstalled every time the script changes.
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-COPY src ./src
+COPY export.py .
 
-ENTRYPOINT ["node", "src/cli.js"]
+# Arguments given to "docker compose run app ..." are appended to this command.
+ENTRYPOINT ["python", "export.py"]

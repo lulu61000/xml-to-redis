@@ -1,5 +1,6 @@
-node_modules
 .git
-test
-*.md
+.github
 .devcontainer
+__pycache__
+*.md
+test_export.py
